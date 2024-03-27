@@ -1,16 +1,19 @@
 <?php
 
-use App\Http\Controllers\Admin\ProductController;
 use Illuminate\Support\Facades\Route;
+use App\Models\User;
 use Illuminate\Http\Request;
-use App\Http\Controllers\CategoriesController;
-use App\Http\Controllers\HomeController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\Admin\ProductsController;
 use App\Http\Controllers\Admin\DashboardController;
-
-
-
-
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MyOontroller;
+use App\Http\Controllers\PhotoController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\MyController;
+use Illuminate\Http\Response;
+use Illuminate\Mail\Mailables\Content;
+use PhpParser\Node\Stmt\Return_;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,137 +21,62 @@ use App\Http\Controllers\Admin\DashboardController;
 |--------------------------------------------------------------------------
 |
 | Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
 |
 */
+// client route
+// Route::get('/', [HomeController::class,'index'])->name('home');
+// Route::prefix('category')->group(function () {
+//     // Danh sách chuyên mục
+//     Route::get('/', [CategoryController::class, 'index'])->name('category.list');
 
-// Route::get('/', function(){
-//     $html = '<h1>Học lập trình tại Unicode</h1>';
-//     return  $html;
+//     Route::get('/edit/{id}', [CategoryController::class, 'getCategory'])->name('category.edit');;
+
+//     Route::post('', [CategoryController::class, 'updateCategory']);
+
+//     Route::get('/add', [CategoryController::class, 'addCategory'])->name('category.add');
+
+//     Route::post('/add', [CategoryController::class, 'showCategory']);
+
+//     Route::delete('/delete/{id}', [CategoryController::class, 'deleteCategory']);
+
+//     Route::post("/upload", [CategoryController::class, 'Handlefile'])->name('category.file');
+//     Route::get("/upload", [CategoryController::class, 'getFile']);
 // });
 
-// Route::get('unicode', function(){
-//     return 'Phương thức Get của path/unicode';
-//  });
-// Route::get('unicode', function(){
-//   return  view('form');
-//    // return 'Phương thức Get của path/unicode';
+// Route::middleware('autho.admin')->prefix('admin')->group(function () {
+//     Route::get('/', [DashboardController::class, 'index']);
+//     Route::resource('products', ProductsController::class)->middleware('auth.admin');
 // });
 
-// Route::post('/unicode', function(){
-//     return 'Phương thức Post của path /unicode';
-// });
-// Route::put('unicode', function(){
-//     return 'Phương thức Put của path /unicode';
-// });
-
-// Route::delete('unicode', function(){
-//     return 'Phương thức delete của path /unicode';
-// });
-
-// Route::patch('unicode', function(){
-//     return 'Phương thức Patch của path /unicode';
-// });
-
-// Route::match(['get', 'post'], 'unicode', function(){
-//     return $_SERVER['REQUEST_METHOD'];
-// });
-// Route::any('unicode', function(Request $request){
-//     // $request = new Request();
-//     return $request->method();
-// });
-// Route::get('show-form', function(){
-//     return view('form');
-// });
-
-// Route::redirect('unicode', 'show-form', 404);
-
-// Route::view('show-form', 'form');
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/sanpham', [HomeController::class, 'products'])->name('product');
+Route::get('/them-san-pham', [HomeController::class, 'getAdd']);
+Route::post('/them-san-pham',[HomeController::class,'postAdd'])->name('post-add');
+Route::put('/them-san-pham', [HomeController::class, 'putAdd']);
 
 
-// Route::get('/', 'App\Http\Controllers\HomeController@index')->name('home');
-// Route::get('/tin-tuc', 'HomeController@getNews')->name('news');
-// Route::get('/chuyen-muc/{id}', [HomeController::class, 'getCategories']);
-    
+Route::get('lay-thong-tin', [HomeController::class, 'getArray']);
+Route::get('/demo-response', function () {
 
+  return view('client.demo-test');
 
-// Route::prefix('admin')->group(function (){
-//     Route::get('tin-tuc/{id?}/{slug?}.html', function($id=null, $slug=null  ){
-//         $conntent = 'Phương thức Get của path / unicode với tham số: ';
-//         $conntent.='id = '.$id.'<br/>';
-//         $conntent.='slug = '.$slug;
-//         return $conntent;
-//      })->where('id', '\d+')->where('slug', '.+')->name('admin.tintuc');
+})->name('demo-response');
+Route::post('demo-response',function(Request $request){
+    if(!empty($request->username)){
 
-//     Route::get('show-form', function(){
-//         return view('form');
-//     })->name('admin.show-form');
-
-//     Route::prefix('products')->middleware('CheckPermission')->group(function (){
-//         Route::get('/', function(){
-//             return'Danh sách sản phẩm';
-//         });
-//         Route::get('add', function(){
-//             return 'Thêm sản phẩm';
-//         })->name('admin.products.add');
-//         Route::get('edit', function(){
-//             return 'Sửa sản phẩm';
-//         });
-//         Route::get('delete', function(){
-//             return 'Xóa sản phẩm';
-//         });
-
-//     });
-// });
-
-
-//Client route
-
-Route::get('/', [HomeController::class, 'index'])->name('home')->middleware('auth.admin');
-
-Route::middleware('auth.admin')->prefix('categories')->group(function (){
-    //danh sách chuyên mục
-    Route::get('/', [CategoriesController::class, 'index'])->name('categories.list');
-    //Lấy chi tiết một chuyên mục (Áp dụng show form sửa chuyên mục)
-    Route::get('/edit/{id}', [CategoriesController::class, 'getCategory'])->name('categories.edit');
-
-    //Xử lý update thư mục
-    Route::post('/edit/{id}', [CategoriesController::class, 'updateCategory']);
-
-    //Hiển thị form add dữ liệu
-    Route::get('/add', [CategoriesController::class, 'addCategory'])->name('categories.add');
-    
-    //Xử lý tên chuyên mục
-    Route::post('/add', [CategoriesController::class, 'handleAddCategory']);
-
-    //Xóa chuyên mục
-    Route::delete('/delete/{id}', [CategoriesController::class, 'deleteCategory'])->name('categories.delete');
-
-    //Hiển thị file upload
-    Route::get('/upload', [CategoriesController::class, 'getFile']);
-
-    //Xử lý file
-    Route::post('/upload', [CategoriesController::class, 'handleFile'])->name('categories.upload');
-    
-    // Route::post('/upload', function (Request $request) {
-    //     // Kiểm tra xem người dùng có upload file nên không
-    //     if (!$request->hasFile('image')) {
-    //         // Nếu không thì in ra thông báo
-    //         return "Mời chọn file cần upload";
-    //     }
-    //     // Nếu có thì thục hiện lưu trữ file vào public/images
-    //     $image = $request->file('image');
-    //     //$storedPath = $image->move('images', $image->getClientOriginalName());
-    
-    //     return "Lưu trữ thành công";
-    // })->name('categories.upload');
+         return back()->withInput()->with('mess','validate không thành công');
+    };
+     return  redirect(route('demo-response'))->with('mess','validate không thành công');
 });
+Route::get('download-image/{link}',[HomeController::class, 'downloadImg'])->name('downImg');
 
-// Route::get('san-pham/{id}', [HomeController::class, 'getProductDetail']);
-//Admin Route
-Route::middleware('auth.admin')->prefix('admin')->group(function(){
-    Route::get('/', [DashboardController::class, 'index']);
-    Route::resource('products', ProductController::class)->middleware('auth.admin.product');
-   
+Route::prefix('/users')->name('users.')->group(function(){
+     Route::get('/',[UserController::class,'index'])->name('index');
+     Route::get('/add',[UserController::class,'add'])->name('add');
+     Route::post('/add',[UserController::class,'postAdd'])->name('post-add');
+     Route::get('/edit/{id}',[UserController::class,'getEdit'])->name('edit');
+     Route::post('/update',[UserController::class,'postEdit'])->name('post-edit');
+     Route::get('/delete/{id}',[UserController::class,'delete'])->name('delete');
 });

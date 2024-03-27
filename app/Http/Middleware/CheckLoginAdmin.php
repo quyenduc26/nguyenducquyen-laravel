@@ -4,28 +4,21 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 class CheckLoginAdmin
 {
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next)
     {
-        //echo 'Middleware request'; 
-        if (!$this->isLogin()){
-            return redirect(route('home'));
-        }
 
-        if($request->is('admin/*') || $request->is('admin') ){
-            echo'<h3>Khu vực quản trị</h3>';
-        }
-        return $next($request);
-    }
-    public function isLogin(){
-        return true;
-    }
+     
+         return $next($request);
+     }
+
 }

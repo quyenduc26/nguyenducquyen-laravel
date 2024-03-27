@@ -10,11 +10,10 @@ class DashboardController extends Controller
     //
     public function __construct()
     {
-        //echo 'Khởi động';
-        //return 'khởi động dashboard';
-        //Sử dụng session để check login
+        echo 'Khởi động';
+        //return 'Khởi động';
     }
     public function index(){
-        return '<h2>Dashboard Welcome</h2>';
+        return '<h2> Dashboard</h2>';
     }
 }
